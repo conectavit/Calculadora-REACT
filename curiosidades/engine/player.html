@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Player Curiosidades</title>
+<style>
+  html,body{margin:0;padding:0;background:#000}
+  #stage{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:"Inter Display","Inter",sans-serif;color:#fff;
+    --a:#111;--b:#000;--acc:#ff0;--acc2:#0ff}
+  #bg{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 30%,var(--a) 0%,var(--b) 75%)}
+  .blob{position:absolute;width:900px;height:900px;border-radius:50%;filter:blur(140px);opacity:.35}
+  #grain{position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='300' height='300' filter='url(%23n)'/></svg>")}
+  #vig{position:absolute;inset:0;background:radial-gradient(90% 70% at 50% 45%,transparent 55%,rgba(0,0,0,.65) 100%)}
+  .dot{position:absolute;border-radius:50%;background:#fff}
+
+  #top{position:absolute;left:60px;right:60px;top:70px;z-index:20}
+  #bars{display:flex;gap:10px}
+  #bars .bar{flex:1;height:10px;border-radius:6px;background:rgba(255,255,255,.22);overflow:hidden}
+  #bars .bar i{display:block;height:100%;width:0;background:#fff;border-radius:6px}
+  #badge{margin-top:34px;display:inline-flex;align-items:center;gap:16px;padding:16px 30px 16px 22px;border-radius:999px;
+    background:rgba(0,0,0,.35);border:2px solid rgba(255,255,255,.18);font-weight:900;font-size:38px;letter-spacing:.04em}
+  #badge b{display:inline-block;width:22px;height:22px;border-radius:50%;background:var(--acc);box-shadow:0 0 22px var(--acc)}
+  #badge span{color:var(--acc)}
+
+  .scene{position:absolute;inset:0;opacity:0;will-change:transform,opacity}
+  .art{position:absolute;left:50%;top:300px;width:720px;height:720px;margin-left:-360px;display:flex;align-items:center;justify-content:center}
+  .art svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 30px 60px rgba(0,0,0,.45))}
+  .emo{position:relative;width:560px;height:560px;display:flex;align-items:center;justify-content:center}
+  .emo .ring{position:absolute;inset:0;border-radius:50%;border:6px dashed color-mix(in srgb,var(--acc) 70%,transparent)}
+  .emo .glow{position:absolute;inset:40px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--acc) 45%,transparent) 0%,transparent 70%)}
+  .emo .disc{position:absolute;inset:70px;border-radius:50%;background:rgba(255,255,255,.08);border:3px solid rgba(255,255,255,.18);backdrop-filter:blur(6px)}
+  .emo .e{position:relative;font-size:250px;line-height:1;font-family:"Noto Color Emoji";filter:drop-shadow(0 25px 35px rgba(0,0,0,.45))}
+
+  .txt{position:absolute;left:70px;right:70px;top:1060px;text-align:center}
+  .h{font-weight:900;line-height:1.08;letter-spacing:-.015em;text-shadow:0 6px 30px rgba(0,0,0,.55)}
+  .h .w{display:inline-block;white-space:pre}
+  .h .hl{color:var(--acc)}
+  .h .hl.mark{position:relative}
+  .sub{margin-top:34px;font-family:"Inter";font-weight:600;font-size:46px;line-height:1.3;color:rgba(255,255,255,.86);text-shadow:0 4px 18px rgba(0,0,0,.6)}
+
+  /* hook */
+  .hook .art{top:280px;width:760px;height:760px;margin-left:-380px}
+  .hook .txt{top:1060px}
+  .tag{display:inline-block;margin-bottom:28px;padding:12px 28px;border-radius:14px;background:var(--acc);color:#111;font-weight:900;font-size:40px;letter-spacing:.06em;transform:rotate(-2deg)}
+
+  /* stat */
+  .stat .art{top:290px;width:420px;height:420px;margin-left:-210px}
+  .stat .art .emo{width:420px;height:420px}.stat .art .emo .e{font-size:190px}
+  .stat .num{position:absolute;left:30px;right:30px;top:760px;text-align:center;font-weight:900;font-size:230px;line-height:1;letter-spacing:-.04em;
+    background:linear-gradient(180deg,#fff 10%,var(--acc) 95%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 10px 40px rgba(0,0,0,.5))}
+  .stat .txt{top:1030px}
+  .stat .h{font-size:84px}
+
+  /* timeline */
+  .tl{position:absolute;left:120px;right:80px;top:470px}
+  .tl .line{position:absolute;left:78px;top:40px;width:8px;border-radius:4px;background:linear-gradient(var(--acc),var(--acc2));transform-origin:top}
+  .tl .it{position:relative;display:flex;align-items:center;gap:40px;margin-bottom:70px}
+  .tl .c{flex:none;width:164px;height:164px;border-radius:50%;background:rgba(255,255,255,.1);border:4px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:90px;font-family:"Noto Color Emoji";box-shadow:0 0 50px color-mix(in srgb,var(--acc) 40%,transparent);backdrop-filter:blur(4px)}
+  .tl .y{font-weight:900;font-size:76px;color:var(--acc);line-height:1}
+  .tl .l{font-family:Inter;font-weight:600;font-size:46px;color:rgba(255,255,255,.9);margin-top:8px}
+  .tl-title{position:absolute;left:70px;right:70px;top:300px;text-align:center}
+
+  /* compare */
+  .cmp{position:absolute;left:60px;right:60px;top:560px;display:flex;gap:40px}
+  .card{flex:1;padding:60px 30px;border-radius:44px;background:rgba(255,255,255,.08);border:3px solid rgba(255,255,255,.18);text-align:center;backdrop-filter:blur(6px)}
+  .card .e{font-family:"Noto Color Emoji";font-size:170px;line-height:1.1}
+  .card .bg{font-weight:900;font-size:92px;color:var(--acc);margin-top:20px;line-height:1}
+  .card .l{font-family:Inter;font-weight:600;font-size:44px;margin-top:20px;line-height:1.25;color:rgba(255,255,255,.9)}
+  .vs{position:absolute;left:50%;top:880px;width:130px;height:130px;margin-left:-65px;border-radius:50%;background:var(--acc);color:#111;font-weight:900;font-size:56px;display:flex;align-items:center;justify-content:center;z-index:2;box-shadow:0 0 50px var(--acc)}
+
+  /* cta */
+  .cta .txt{top:560px}
+  .cta .h{font-size:112px}
+  .btn{position:absolute;left:50%;top:1180px;transform:translateX(-50%);padding:40px 80px;border-radius:999px;background:var(--acc);color:#111;font-weight:900;font-size:64px;white-space:nowrap;box-shadow:0 20px 60px color-mix(in srgb,var(--acc) 50%,transparent)}
+  .hand{position:absolute;left:720px;top:1330px;font-family:"Noto Color Emoji";font-size:150px}
+  .icons{position:absolute;left:0;right:0;top:1500px;display:flex;justify-content:center;gap:70px;font-family:"Noto Color Emoji";font-size:96px}
+
+  /* capa */
+  .cover .art{top:180px;width:900px;height:900px;margin-left:-450px}
+  .cover .txt{top:1090px}
+  .cover .h{font-size:118px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"></div>
+  <div id="blobs"></div>
+  <div id="dots"></div>
+  <div id="scenes"></div>
+  <div id="grain"></div>
+  <div id="vig"></div>
+  <div id="top"><div id="bars"></div><div id="badge"><b></b>VOCÊ SABIA? <span id="num"></span></div></div>
+</div>
+<script src="data.js"></script>
+<script src="art.js"></script>
+<script>
+const qs = new URLSearchParams(location.search);
+const V = VIDEOS.find(v => v.id == (qs.get("v") || 1));
+const MODE = qs.get("mode") || "video"; // video | cover
+const SC = timeline(V);
+const TOTAL = SC.reduce((s, c) => s + c.dur, 0);
+const stage = document.getElementById("stage");
+stage.style.setProperty("--a", V.tema.a); stage.style.setProperty("--b", V.tema.b);
+stage.style.setProperty("--acc", V.tema.acc); stage.style.setProperty("--acc2", V.tema.acc2);
+document.getElementById("num").textContent = "#" + String(V.id).padStart(2, "0");
+
+// ---------- helpers
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const easeOut = x => 1 - Math.pow(1 - x, 3);
+const easeIn = x => x * x * x;
+const backOut = x => { const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+function fontFor(text, big = false) {
+  const n = text.replace(/\*/g, "").length;
+  if (big) return n < 20 ? 124 : n < 40 ? 108 : n < 60 ? 94 : 84;
+  return n < 22 ? 108 : n < 40 ? 94 : n < 60 ? 84 : n < 80 ? 76 : 70;
+}
+function words(text, delay0 = 0.2, step = 0.07) {
+  let out = "", i = 0, hl = false;
+  text.split(/(\*[^*]+\*)/).forEach(seg => {
+    if (!seg) return;
+    const isHl = seg.startsWith("*");
+    seg.replace(/\*/g, "").split(/(\s+)/).forEach(w => {
+      if (!w) return;
+      if (/^\s+$/.test(w)) { out += " "; return; }
+      out += `<span class="w${isHl ? " hl" : ""}" data-in="${(delay0 + i * step).toFixed(2)}" data-fx="word">${w}</span>`;
+      i++;
+    });
+  });
+  return { html: out, end: delay0 + i * step };
+}
+let UID = 0;
+function artHTML(art, delay = 0.05) {
+  if (!art) return "";
+  if (art.startsWith("hero")) {
+    const k = art.includes(":") ? art.split(":")[1] : V.hero;
+    const u = "u" + (++UID);
+    const svg = ART[k]().replace(/id="([^"]+)"/g, `id="$1_${u}"`).replace(/url\(#([^)]+)\)/g, `url(#$1_${u})`);
+    return `<div class="art" data-in="${delay}" data-fx="pop" data-kb="1">${svg}</div>`;
+  }
+  return `<div class="art" data-in="${delay}" data-fx="pop" data-kb="1"><div class="emo">
+    <div class="glow" data-a="pulse:0.08:1.3:0"></div><div class="ring" data-a="spin:14"></div><div class="disc"></div>
+    <div class="e" data-a="float:14:0.9:0">${art}</div></div></div>`;
+}
+
+// ---------- background
+const blobs = document.getElementById("blobs");
+[[V.tema.acc, -200, 200], [V.tema.acc2, 400, 1100], [V.tema.acc, -100, 1500]].forEach(([c, x, y], i) => {
+  blobs.insertAdjacentHTML("beforeend", `<div class="blob" style="background:${c};left:${x}px;top:${y}px" data-a="drift:120:${0.08 + i * 0.03}:${i * 2}"></div>`);
+});
+const dots = document.getElementById("dots");
+for (let i = 0; i < 26; i++) {
+  const x = (i * 397) % 1080, y = (i * 733) % 1920, r = 3 + (i % 4) * 2;
+  dots.insertAdjacentHTML("beforeend", `<div class="dot" style="left:${x}px;top:${y}px;width:${r}px;height:${r}px;opacity:${0.12 + (i % 5) * 0.05}" data-a="float:40:${0.15 + (i % 3) * 0.07}:${i}"></div>`);
+}
+// progress bars
+const bars = document.getElementById("bars");
+SC.forEach(() => bars.insertAdjacentHTML("beforeend", `<div class="bar"><i></i></div>`));
+
+// ---------- build scenes
+const scenesEl = document.getElementById("scenes");
+function buildScene(c) {
+  let h = "";
+  if (c.t === "hook" || c.t === "fact") {
+    const wd = words(c.text, 0.25);
+    h += artHTML(c.art);
+    h += `<div class="txt">${c.t === "hook" ? `<div class="tag" data-in="0.1" data-fx="pop">SÉRIO 👀</div>` : ""}
+      <div class="h" style="font-size:${fontFor(c.text, c.t === "hook")}px">${wd.html}</div>
+      ${c.sub ? `<div class="sub" data-in="${(wd.end + 0.15).toFixed(2)}" data-fx="up">${c.sub}</div>` : ""}</div>`;
+  } else if (c.t === "stat") {
+    h += artHTML(c.art);
+    const fs = c.big.length > 9 ? 150 : c.big.length > 6 ? 190 : 230;
+    h += `<div class="num" style="font-size:${fs}px;top:${760 + (230 - fs) / 2}px" data-in="0.25" data-fx="pop" data-count="${c.big}">${c.big}</div>`;
+    const wd = words(c.text, 0.9);
+    h += `<div class="txt"><div class="h">${wd.html}</div>${c.sub ? `<div class="sub" data-in="${(wd.end + 0.1).toFixed(2)}" data-fx="up">${c.sub}</div>` : ""}</div>`;
+  } else if (c.t === "timeline") {
+    const wd = words(c.text, 0.1);
+    h += `<div class="tl-title"><div class="h" style="font-size:88px">${wd.html}</div></div>`;
+    const step = (c.dur - 1.6) / c.items.length;
+    const H = c.items.length * 234 - 70;
+    h += `<div class="tl" style="top:${c.items.length > 3 ? 470 : 560}px"><div class="line" style="height:${H - 164}px" data-in="0.4" data-fx="grow" data-len="${(c.items.length - 1) * step}"></div>` +
+      c.items.map((it, i) => `<div class="it" data-in="${(0.5 + i * step).toFixed(2)}" data-fx="left">
+        <div class="c">${it.e}</div><div><div class="y">${it.y}</div><div class="l">${it.l}</div></div></div>`).join("") + `</div>`;
+  } else if (c.t === "compare") {
+    const wd = words(c.text, 0.1);
+    h += `<div class="tl-title"><div class="h" style="font-size:96px">${wd.html}</div></div>`;
+    h += `<div class="cmp">` + c.items.map((it, i) => `<div class="card" data-in="${0.5 + i * 1.2}" data-fx="pop">
+      <div class="e" data-a="float:10:1:${i}">${it.e}</div><div class="bg">${it.big}</div><div class="l">${it.l}</div></div>`).join("") + `</div>`;
+    h += `<div class="vs" data-in="1.4" data-fx="pop">VS</div>`;
+  } else if (c.t === "cta") {
+    const wd = words(c.text, 0.15, 0.09);
+    h += `<div class="txt"><div class="h">${wd.html}</div>${c.sub ? `<div class="sub" data-in="${(wd.end + 0.1).toFixed(2)}" data-fx="up">${c.sub}</div>` : ""}</div>`;
+    h += `<div class="btn" data-in="${(wd.end + 0.4).toFixed(2)}" data-fx="pop"><span data-a="pulse:0.05:2.4:0" style="display:inline-block">+ SEGUIR</span></div>`;
+    h += `<div class="hand" data-in="${(wd.end + 0.8).toFixed(2)}" data-fx="up"><span data-a="tap" style="display:inline-block">👆</span></div>`;
+    h += `<div class="icons">${["❤️", "💬", "🔁", "🔖"].map((e, i) => `<span data-in="${(wd.end + 1.0 + i * 0.12).toFixed(2)}" data-fx="pop" style="display:inline-block">${e}</span>`).join("")}</div>`;
+  }
+  const el = document.createElement("div");
+  el.className = "scene " + c.t;
+  el.innerHTML = h;
+  scenesEl.appendChild(el);
+  c.el = el;
+  c.ins = [...el.querySelectorAll("[data-in]")].map(n => ({ n, d: +n.dataset.in, fx: n.dataset.fx }));
+}
+
+let ANIM = [];
+function collectAnim() {
+  ANIM = [...document.querySelectorAll("[data-a]")].map(n => {
+    const [k, a, s, p] = n.dataset.a.split(":");
+    return { n, k, a: +a || 0, s: +s || 1, p: +p || 0, svg: n instanceof SVGElement };
+  });
+}
+function idle(t) {
+  for (const o of ANIM) {
+    const w = t * o.s * Math.PI * 2 + o.p;
+    let tr = "";
+    switch (o.k) {
+      case "float": tr = `translateY(${Math.sin(w) * o.a}px)`; break;
+      case "drift": tr = `translate(${Math.sin(w) * o.a}px,${Math.cos(w * 0.7) * o.a * 0.5}px)`; break;
+      case "sway": tr = `rotate(${Math.sin(w) * o.a}deg)`; break;
+      case "spin": tr = `rotate(${(t * o.a) % 360}deg)`; break;
+      case "pulse": tr = `scale(${1 + Math.sin(w) * o.a})`; break;
+      case "blink": { const ph = (t + o.p) % 3.2; tr = `scaleY(${ph < 0.14 ? 0.1 : 1})`; break; }
+      case "tap": { const ph = (t * 1.6) % 1; tr = `translateY(${-Math.abs(Math.sin(ph * Math.PI)) * 40}px) rotate(-12deg)`; break; }
+    }
+    o.n.style.transform = tr;
+  }
+}
+function fmtCount(str, p) {
+  const m = str.match(/^([^\d]*)(\d[\d.]*)(.*)$/);
+  if (!m || str.includes(",")) return str;
+  const val = parseInt(m[2].replace(/\./g, ""), 10);
+  const cur = Math.round(val * p);
+  const s = m[2].includes(".") ? cur.toLocaleString("pt-BR") : String(cur);
+  return m[1] + s + m[3];
+}
+
+function renderScene(c, t) {
+  const L = t - c.start;
+  const el = c.el;
+  if (L < -0.01 || L > c.dur + 0.35) { el.style.opacity = 0; el.style.display = "none"; return; }
+  el.style.display = "block";
+  // entrada / saída
+  const inP = easeOut(clamp(L / 0.45));
+  const last = c === SC[SC.length - 1];
+  const outP = last ? 0 : easeIn(clamp((L - (c.dur - 0.3)) / 0.35));
+  el.style.opacity = Math.min(inP, 1 - outP);
+  el.style.transform = `scale(${1.08 - 0.08 * inP - 0.1 * outP}) translateY(${(1 - inP) * 70 - outP * 90}px)`;
+  el.style.filter = outP > 0.01 || inP < 0.99 ? `blur(${(1 - inP) * 10 + outP * 14}px)` : "none";
+  for (const o of c.ins) {
+    const p = clamp((L - o.d) / 0.5);
+    const n = o.n;
+    if (o.fx === "word") {
+      const e = backOut(clamp((L - o.d) / 0.38));
+      n.style.opacity = clamp((L - o.d) / 0.15);
+      n.style.transform = `translateY(${(1 - e) * 40}px) scale(${0.7 + 0.3 * e})`;
+    } else if (o.fx === "up") {
+      n.style.opacity = easeOut(p); n.style.transform = `translateY(${(1 - easeOut(p)) * 40}px)`;
+    } else if (o.fx === "left") {
+      n.style.opacity = easeOut(p); n.style.transform = `translateX(${(1 - easeOut(p)) * -80}px)`;
+    } else if (o.fx === "grow") {
+      const len = +n.dataset.len || 1;
+      n.style.transform = `scaleY(${easeOut(clamp((L - o.d) / len))})`;
+    } else if (o.fx === "pop") {
+      const e = backOut(clamp((L - o.d) / 0.6));
+      let s = 0.3 + 0.7 * e;
+      if (n.dataset.kb) s *= 1 + 0.05 * clamp(L / c.dur); // ken burns leve
+      n.style.opacity = clamp((L - o.d) / 0.2);
+      n.style.transform = `scale(${s})`;
+      if (n.dataset.count) n.textContent = fmtCount(n.dataset.count, easeOut(clamp((L - o.d) / 1.1)));
+    }
+  }
+}
+function render(t) {
+  idle(t);
+  SC.forEach(c => renderScene(c, t));
+  [...bars.children].forEach((b, i) => {
+    const c = SC[i];
+    b.firstChild.style.width = clamp((t - c.start) / c.dur) * 100 + "%";
+  });
+}
+
+// ---------- capa (thumbnail)
+function buildCover() {
+  const hook = SC[0];
+  const wd = words(hook.text, 0);
+  const el = document.createElement("div");
+  el.className = "scene cover";
+  el.style.opacity = 1;
+  el.innerHTML = artHTML("hero") + `<div class="txt"><div class="tag">VOCÊ SABIA? 🤯</div>
+    <div class="h" style="font-size:${fontFor(hook.text, true) + 8}px">${wd.html}</div></div>`;
+  scenesEl.appendChild(el);
+  document.getElementById("bars").style.display = "none";
+  collectAnim(); idle(0.6);
+}
+
+if (MODE === "cover") buildCover();
+else { SC.forEach(buildScene); collectAnim(); render(0); }
+
+window.__info = { total: TOTAL, id: V.id, slug: V.slug, scenes: SC.map(c => ({ t: c.t, start: c.start, dur: c.dur, n: (c.items || []).length })) };
+window.__render = render;
+</script>
+</body>
+</html>
