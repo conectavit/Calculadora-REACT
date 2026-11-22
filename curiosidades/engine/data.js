@@ -293,10 +293,15 @@ function sceneDuration(c) {
   return Math.round(Math.min(Math.max(d, 3.4), 7.2) * 10) / 10;
 }
 
+// Se a narração existir (voz/durs.js), cada cena dura o tempo da fala.
+const VOZ_LEAD = 0.2;
 function timeline(video) {
   let t = 0;
-  return video.cenas.map((c) => {
-    const d = sceneDuration(c);
+  const voz = (typeof VOZ !== "undefined" ? VOZ : (() => { try { return require("./voz/durs.js").VOZ; } catch (e) { return null; } })());
+  const vd = voz && voz[video.id];
+  return video.cenas.map((c, i) => {
+    let d = sceneDuration(c);
+    if (vd) d = Math.round((vd[i] + VOZ_LEAD + 0.4 + (i === video.cenas.length - 1 ? 1.6 : 0)) * 100) / 100;
     const s = { ...c, start: t, dur: d };
     t += d;
     return s;
