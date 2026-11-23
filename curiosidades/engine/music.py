@@ -73,7 +73,7 @@ def ding():
 
 for i, s in enumerate(info["scenes"]):
     if i > 0: add(whoosh(), s["start"] - 0.3, 0.55)
-    if s["t"] in ("stat", "hook"): add(pop(), s["start"] + 0.3, 0.35)
+    if s["t"] in ("stat", "hook", "like"): add(pop(), s["start"] + 0.3, 0.35)
     if s["t"] == "cta": add(ding(), s["start"] + 1.2, 0.25)
     if s["t"] == "timeline":
         n = s["n"]; step = (s["dur"] - 1.6) / n

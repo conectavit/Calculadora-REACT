@@ -72,7 +72,7 @@
   /* cta */
   .cta .txt{top:560px}
   .cta .h{font-size:112px}
-  .btn{position:absolute;left:50%;top:1180px;transform:translateX(-50%);padding:40px 80px;border-radius:999px;background:var(--acc);color:#111;font-weight:900;font-size:64px;white-space:nowrap;box-shadow:0 20px 60px color-mix(in srgb,var(--acc) 50%,transparent)}
+  .btn{position:absolute;left:0;right:0;margin:0 auto;width:fit-content;top:1180px;padding:40px 80px;border-radius:999px;background:var(--acc);color:#111;font-weight:900;font-size:64px;white-space:nowrap;box-shadow:0 20px 60px color-mix(in srgb,var(--acc) 50%,transparent)}
   .hand{position:absolute;left:720px;top:1330px;font-family:"Noto Color Emoji";font-size:150px}
   .icons{position:absolute;left:0;right:0;top:1500px;display:flex;justify-content:center;gap:70px;font-family:"Noto Color Emoji";font-size:96px}
 
@@ -162,7 +162,7 @@ SC.forEach(() => bars.insertAdjacentHTML("beforeend", `<div class="bar"><i></i><
 const scenesEl = document.getElementById("scenes");
 function buildScene(c) {
   let h = "";
-  if (c.t === "hook" || c.t === "fact") {
+  if (c.t === "hook" || c.t === "fact" || c.t === "like") {
     const wd = words(c.text, 0.25);
     h += artHTML(c.art);
     h += `<div class="txt">${c.t === "hook" ? `<div class="tag" data-in="0.1" data-fx="pop">SÉRIO 👀</div>` : ""}
@@ -191,7 +191,7 @@ function buildScene(c) {
   } else if (c.t === "cta") {
     const wd = words(c.text, 0.15, 0.09);
     h += `<div class="txt"><div class="h">${wd.html}</div>${c.sub ? `<div class="sub" data-in="${(wd.end + 0.1).toFixed(2)}" data-fx="up">${c.sub}</div>` : ""}</div>`;
-    h += `<div class="btn" data-in="${(wd.end + 0.4).toFixed(2)}" data-fx="pop"><span data-a="pulse:0.05:2.4:0" style="display:inline-block">+ SEGUIR</span></div>`;
+    h += `<div class="btn" data-in="${(wd.end + 0.4).toFixed(2)}" data-fx="pop"><span data-a="pulse:0.05:2.4:0" style="display:inline-block">🔔 INSCREVA-SE</span></div>`;
     h += `<div class="hand" data-in="${(wd.end + 0.8).toFixed(2)}" data-fx="up"><span data-a="tap" style="display:inline-block">👆</span></div>`;
     h += `<div class="icons">${["❤️", "💬", "🔁", "🔖"].map((e, i) => `<span data-in="${(wd.end + 1.0 + i * 0.12).toFixed(2)}" data-fx="pop" style="display:inline-block">${e}</span>`).join("")}</div>`;
   }

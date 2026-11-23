@@ -96,4 +96,25 @@ const FALAS = {
     "Você sabia dessa? Manda pra alguém que precisa saber disso!",
   ],
 };
+const LIKE = [
+  "Antes de continuar, já deixa o seu like!",
+  "Já deixa o like aí, que vem coisa doida!",
+  "Deixa o seu like pra ajudar o canal!",
+];
+const CTA_FALA = {
+  1: "Se inscreve no canal e comenta aqui: você teria coragem de visitar essa ilha?",
+  2: "Se inscreve no canal e comenta: se você pudesse rejuvenescer, voltaria pra qual idade?",
+  3: "Se inscreve no canal e comenta qual bicho você acha mais resistente que o tardígrado!",
+  4: "Se inscreve no canal e comenta: qual desses fatos te assustou mais? Um, dois ou três?",
+  5: "Se inscreve no canal e comenta outro fato histórico que bugou a sua cabeça!",
+  6: "Se inscreve no canal e marca nos comentários alguém que tem medo de tubarão!",
+  7: "Se inscreve no canal e comenta, sendo sincero: você jogava mel cristalizado fora?",
+  8: "Se inscreve no canal e comenta qual bicho bizarro você quer ver na parte dois!",
+  9: "Se inscreve no canal e comenta um emoji de cabeça explodindo se você ficou chocado!",
+  10: "Se inscreve no canal e comenta um emoji rindo se você não sabia dessa!",
+};
+for (const id in FALAS) {
+  FALAS[id].splice(1, 0, LIKE[id % 3]);
+  FALAS[id][FALAS[id].length - 1] = CTA_FALA[id];
+}
 if (typeof module !== "undefined") module.exports = { FALAS };

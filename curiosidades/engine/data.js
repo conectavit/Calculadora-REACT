@@ -281,6 +281,26 @@ const VIDEOS = [
   },
 ];
 
+// Pedido de like logo depois do gancho (~3 s) e final "inscreva-se + comente".
+const CTA_FINAL = {
+  1: "E comenta: você teria coragem de visitar essa ilha? 🐍",
+  2: "E comenta: pra qual idade você voltaria? 🪼",
+  3: "E comenta um bicho que você acha mais resistente 🐻",
+  4: "E comenta: qual fato te assustou mais? 1, 2 ou 3? 🐙",
+  5: "E comenta outro fato que bugou sua cabeça 🤯",
+  6: "E marca alguém que tem medo de tubarão 🦈",
+  7: "E comenta: você jogava mel cristalizado fora? 🍯",
+  8: "E comenta qual bicho bizarro você quer na parte 2 🍄",
+  9: "E comenta 🤯 se seu cérebro explodiu",
+  10: "E comenta 😂 se você não sabia dessa",
+};
+for (const v of VIDEOS) {
+  v.cenas.splice(1, 0, { t: "like", text: "Já deixa o seu *like*", sub: "pra ajudar o canal a trazer mais curiosidades", art: "❤️" });
+  const cta = v.cenas[v.cenas.length - 1];
+  cta.text = "Se inscreve no *canal*!";
+  cta.sub = CTA_FINAL[v.id];
+}
+
 // Duração automática de cada cena pelo tamanho do texto (tempo de leitura).
 function sceneDuration(c) {
   if (c.d) return c.d;
