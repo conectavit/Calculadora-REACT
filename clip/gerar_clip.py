@@ -158,11 +158,14 @@ CONS_MS = {"p": 70, "t": 70, "k": 75, "b": 60, "d": 55, "g": 60, "f": 90, "v": 6
            "s2": 90, "r2": 50}
 
 
-def gerar_voz():
+def gerar_voz(silabas=None, linhas=None, fonemas=None):
     """Monta um arquivo .pho (fonema, duração, curva de altura) e sintetiza com MBROLA."""
+    silabas = silabas if silabas is not None else globals()["silabas"]
+    linhas = linhas if linhas is not None else globals()["linhas"]
+    fonemas = fonemas or FONEMAS
     itens = []
     for (t0, t1, li, si, n) in silabas:
-        fon = FONEMAS[chave(linhas[li][2][si])].split()
+        fon = fonemas[chave(linhas[li][2][si])].split()
         k = [i for i, p in enumerate(fon) if p.startswith("*")][0]
         onset = [(p, CONS_MS[p] / 1000) for p in fon[:k]]
         coda = [(p, CONS_MS[p] / 1000) for p in fon[k + 1:]]
